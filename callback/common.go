@@ -36,14 +36,14 @@ func aesEncryptToBase64(str string) (string, error) {
 	//if _, err := aes.CBCPKCS7DecryptFromBase64(str, _options.defaultAesFnKey); err == nil {
 	//	return str, nil
 	//}
-	return aes.CBCPKCS7EncryptToBase64([]byte(str), _options.defaultAesFnKey)
+	return aes.CBCPKCS7EncryptToBase64([]byte(str), _defaultAesFnKey)
 }
 
 func aesDecryptFromBase64(str string) (string, error) {
 	if str == "" {
 		return str, nil
 	}
-	return aes.CBCPKCS7DecryptFromBase64(str, _options.defaultAesFnKey)
+	return aes.CBCPKCS7DecryptFromBase64(str, _defaultAesFnKey)
 }
 
 func encryptDestMap(table string, dest map[string]interface{}) (map[string]interface{}, error) {

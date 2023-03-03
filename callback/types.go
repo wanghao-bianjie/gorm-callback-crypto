@@ -3,17 +3,16 @@ package callback
 import "gorm.io/gorm"
 
 var (
-	_options = options{
-		defaultAesFnKey: []byte("AesKeyLengthIs16"),
-		beforeFn:        aesEncryptToBase64,
-		afterFn:         aesDecryptFromBase64,
+	_defaultAesFnKey = []byte("AesKeyLengthIs16")
+	_options         = options{
+		beforeFn: aesEncryptToBase64,
+		afterFn:  aesDecryptFromBase64,
 	}
 )
 
 type options struct {
-	defaultAesFnKey []byte
-	beforeFn        func(origin string) (store string, err error)
-	afterFn         func(store string) (origin string, err error)
+	beforeFn func(origin string) (store string, err error)
+	afterFn  func(store string) (origin string, err error)
 }
 
 type Option interface {
@@ -23,7 +22,7 @@ type Option interface {
 type defaultAesFnKeyOption []byte
 
 func (o defaultAesFnKeyOption) apply(opt *options) {
-	opt.defaultAesFnKey = o
+	_defaultAesFnKey = o
 }
 
 type beforeFnOption func(origin string) (store string, err error)
@@ -35,7 +34,7 @@ func (o beforeFnOption) apply(opt *options) {
 type afterFnOption func(origin string) (store string, err error)
 
 func (o afterFnOption) apply(opt *options) {
-	opt.beforeFn = o
+	opt.afterFn = o
 }
 
 func WithDefaultAesFnKey(aesKey []byte) Option {
