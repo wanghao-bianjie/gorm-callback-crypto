@@ -101,16 +101,20 @@ func TestCreate(t *testing.T) {
 		"id_no":        user.IdNo,
 		"update_at":    user.UpdateAt,
 	}
-	err = db.Model(&model.User{}).Create(userMap).Error
+	u1 := model.User{}
+	err = db.Model(&u1).Create(userMap).Error
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Log("通过map创建:", u1)
 	t.Log("通过map创建:", userMap)
 
-	err = db.Model(&model.User{}).Create(&userMap).Error
+	u2 := model.User{}
+	err = db.Model(&u2).Create(&userMap).Error
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Log("通过*map创建:", u2)
 	t.Log("通过*map创建:", userMap)
 
 	//通过结构体指针批量创建
@@ -138,16 +142,20 @@ func TestCreate(t *testing.T) {
 			"update_at":    user.UpdateAt,
 		},
 	}
-	err = db.Model(&model.User{}).Create(userMaps).Error
+	u3 := model.User{}
+	err = db.Model(&u3).Create(userMaps).Error
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Log("通过map批量创建:", u3)
 	t.Log("通过map批量创建:", userMaps)
 
-	err = db.Model(&model.User{}).Create(&userMaps).Error
+	u4 := model.User{}
+	err = db.Model(&u4).Create(&userMaps).Error
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Log("通过*[]map批量创建:", u4)
 	t.Log("通过*[]map批量创建:", userMaps)
 
 	var user2 = user
@@ -275,7 +283,7 @@ func TestUpdate(t *testing.T) {
 	setUpDB()
 	db := repository.GetDb()
 	setUpCallback()
-	//db = db.Debug()
+	db = db.Debug()
 
 	var users []model.User
 	for i := 0; i < 11; i++ {
@@ -312,27 +320,31 @@ func TestUpdate(t *testing.T) {
 
 	//updates
 	user3 := users[2]
-	err = db.Model(&user3).Updates(&model.User{
+	u3 := model.User{
 		Name:        "new3-p-sp-" + user.Name,
 		PhoneNumber: "new3-p-sp-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Model(&user3).Updates(&u3).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user3-p-sp:")
 	t.Log(user3)
+	t.Log(u3)
 
 	user4 := users[3]
-	err = db.Table(user3.TableName()).Updates(&model.User{
+	u4 := model.User{
 		Id:          user4.Id,
 		Name:        "new4-t-sp-" + user.Name,
 		PhoneNumber: "new4-t-sp-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Table(user4.TableName()).Updates(&u4).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user4-t-sp:")
 	t.Log(user4)
+	t.Log(u4)
 
 	user5 := users[4]
 	user5.Name = "new5-p-" + user.Name
@@ -346,69 +358,81 @@ func TestUpdate(t *testing.T) {
 
 	//updates map
 	user6 := users[5]
-	err = db.Model(&user6).Updates(map[string]interface{}{
+	m6 := map[string]interface{}{
 		"name":         "new6-p-m-" + user.Name,
 		"phone_number": "new6-p-m-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Model(&user6).Updates(m6).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user6-p-m:")
 	t.Log(user6)
+	t.Log(m6)
 
 	user7 := users[6]
-	err = db.Model(&user7).Updates(&map[string]interface{}{
+	m7 := map[string]interface{}{
 		"name":         "new7-p-mp-" + user.Name,
 		"phone_number": "new7-p-mp-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Model(&user7).Updates(&m7).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user7-p-mp:")
 	t.Log(user7)
+	t.Log(m7)
 
 	user8 := users[7]
-	err = db.Table(user8.TableName()).Where(model.User{Id: user8.Id}).Updates(map[string]interface{}{
+	m8 := map[string]interface{}{
 		"name":         "new8-t-m-" + user.Name,
 		"phone_number": "new8-t-m-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Table(user8.TableName()).Where(model.User{Id: user8.Id}).Updates(m8).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user8-t-m:")
 	t.Log(user8)
+	t.Log(m8)
 
 	user9 := users[8]
-	err = db.Table(user9.TableName()).Where(model.User{Id: user9.Id}).Updates(&map[string]interface{}{
+	m9 := map[string]interface{}{
 		"name":         "new9-t-mp-" + user.Name,
 		"phone_number": "new9-t-mp-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Table(user9.TableName()).Where(model.User{Id: user9.Id}).Updates(&m9).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user9-t-mp:")
 	t.Log(user9)
+	t.Log(m9)
 
 	user10 := users[9]
-	err = db.Table(user10.TableName()).Updates(model.User{
+	u10 := model.User{
 		Id:          user10.Id,
 		Name:        "new10-t-s-" + user.Name,
 		PhoneNumber: "new10-t-s-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Table(user10.TableName()).Updates(u10).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user10-t-s:")
 	t.Log(user10)
+	t.Log(u10)
 
 	user11 := users[10]
-	err = db.Model(&user11).Updates(model.User{
+	u11 := model.User{
 		Name:        "new11-p-s-" + user.Name,
 		PhoneNumber: "new11-p-s-" + user.PhoneNumber,
-	}).Error
+	}
+	err = db.Model(&user11).Updates(u11).Error
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("updates user11-p-s:")
 	t.Log(user11)
+	t.Log(u11)
 }
