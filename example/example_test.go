@@ -1,6 +1,7 @@
 package example
 
 import (
+	"reflect"
 	"strings"
 	"testing"
 
@@ -279,6 +280,30 @@ func TestFind(t *testing.T) {
 	}
 }
 
+func TestName(t *testing.T) {
+	setUpDB()
+	db := repository.GetDb()
+	setUpCallback()
+	db = db.Debug()
+	user1 := user
+	err := db.Create(&user1).Error
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Where(&model.User{Id: user1.Id}).Updates(model.User{
+		PhoneNumber: "123",
+		IdNo:        "qwe",
+	}).Error; err != nil {
+		t.Fatal(err)
+	}
+	var res model.User
+	err = db.Last(&res).Error
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(res)
+}
+
 func TestUpdate(t *testing.T) {
 	setUpDB()
 	db := repository.GetDb()
@@ -435,4 +460,19 @@ func TestUpdate(t *testing.T) {
 	t.Log("updates user11-p-s:")
 	t.Log(user11)
 	t.Log(u11)
+}
+
+func TestReflect(t *testing.T) {
+	var v interface{}
+	v = user
+
+	reflectValue := reflect.ValueOf(v)
+	if !reflectValue.CanSet() {
+		newStruct := reflect.New(reflectValue.Type())
+		//for i := 0; i < reflectValue.Type().NumField(); i++ {
+		//	newStruct.Elem().Field(i).Set(reflectValue.Field(i))
+		//}
+		newStruct.Elem().Set(reflectValue)
+		t.Log(newStruct.Elem().Interface())
+	}
 }

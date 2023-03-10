@@ -42,6 +42,11 @@ func BeforeUpdate(db *gorm.DB) {
 			return
 		}
 		fn := func(reflectValue reflect.Value) {
+			var newStruct reflect.Value
+			if !reflectValue.CanSet() {
+				newStruct = reflect.New(reflectValue.Type())
+				newStruct.Elem().Set(reflectValue)
+			}
 			for _, field := range db.Statement.Schema.Fields {
 				switch reflectValue.Kind() {
 				case reflect.Struct: //struct
@@ -56,15 +61,7 @@ func BeforeUpdate(db *gorm.DB) {
 								if reflectValue.CanSet() {
 									_ = db.AddError(field.Set(reflectValue, encrypt))
 								} else {
-									newStruct := reflect.New(reflectValue.Type())
-									for i := 0; i < reflectValue.Type().NumField(); i++ {
-										if reflectValue.Type().Field(i).Name == field.Name {
-											newStruct.Elem().Field(i).SetString(encrypt)
-										} else {
-											newStruct.Elem().Field(i).Set(reflectValue.Field(i))
-										}
-									}
-									db.Statement.Dest = newStruct.Elem().Interface()
+									newStruct.Elem().FieldByName(field.Name).SetString(encrypt)
 								}
 							} else {
 								db.AddError(fmt.Errorf("encrypt table:%s,column:%s,but not string", db.Statement.Schema.Table, field.DBName))
@@ -73,6 +70,9 @@ func BeforeUpdate(db *gorm.DB) {
 						}
 					}
 				}
+			}
+			if !reflectValue.CanSet() {
+				db.Statement.Dest = newStruct.Elem().Interface()
 			}
 		}
 		destReflectValue := getReflectValueElem(db.Statement.Dest)
