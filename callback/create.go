@@ -61,9 +61,9 @@ func BeforeCreate(db *gorm.DB) {
 			case reflect.Slice, reflect.Array: //[]struct
 				for i := 0; i < destReflectValue.Len(); i++ {
 					index := destReflectValue.Index(i)
-					if destReflectValue.Index(i).Kind() != reflect.Struct {
-						continue
-					}
+					//if index.Kind() != reflect.Struct {
+					//	continue
+					//}
 					if fieldValue, isZero := field.ValueOf(index); !isZero { // 从字段中获取数值
 						if dbTableColumnHandleMap[[2]string{db.Statement.Schema.Table, field.DBName}] {
 							if s, ok := fieldValue.(string); ok {

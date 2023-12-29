@@ -71,7 +71,7 @@ func setUpCallbackWithCustomizeFn(db *gorm.DB) {
 
 var user = model.User{
 	Id:          0,
-	Name:        "tom",
+	Name:        "1229-tom",
 	PhoneNumber: "15651850001",
 	Address:     "江苏省南京市建邺区xxxx广场",
 	IdNo:        "320322199801010001",
@@ -79,6 +79,22 @@ var user = model.User{
 }
 
 var aesKey = "1234567890123456"
+
+func TestBatchCreate(t *testing.T) {
+	setUpDB()
+	db := repository.GetDb()
+	setUpCallback()
+	user1 := user
+	user2 := user
+	//users := []model.User{user1, user2}
+	users := []*model.User{&user1, &user2}
+	err := db.Save(users).Error
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(users[0].Id)
+	t.Log(users[1].Id)
+}
 
 func TestCreate(t *testing.T) {
 	setUpDB()
